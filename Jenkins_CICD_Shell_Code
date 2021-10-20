@@ -1,0 +1,20 @@
+a=`pwd`
+dat=`date +"%d-%m-20%y-%H-%M"`
+echo $dat
+cd /opt/demo/project/build/
+echo "Now in /opt/demo/project/build/--> $?"
+mkdir -p /opt/demo/project/backup/$dat 
+echo "Created backup directory--> $?"
+mv index.html /opt/demo/project/backup/$dat
+cp -r /var/lib/jenkins/workspace/NGINX_CICD/index.html .
+echo "Copied index.html file to Build location-->$?"
+docker build -t 0.0.0.0:4010/nginx:$JOB_NAME-$dat .
+echo "Docker build -->$?"
+docker push 0.0.0.0:4010/nginx:$JOB_NAME-$dat
+echo "Docker push-->$?"
+cd /opt/demo/project/depeloment/
+a=`cat  nginx.yaml| grep image | awk -F ":" {'print$4'}`
+echo $a
+sed -i -e s@"$a"@"$JOB_NAME-$dat"@g nginx.yaml
+echo "Changes image name in the deployment files -->$?"
+kubectl apply -f nginx.yaml
