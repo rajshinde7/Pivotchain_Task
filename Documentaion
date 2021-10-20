@@ -1,0 +1,74 @@
+1) First sub Task :- Setup single node kubernetes cluster. (Using Kubeadm)
+    After successful installation of Docker,kubeadm,kubectl,kubelet  executed below command for k8s cluster.
+    kubeadm init
+
+  K8's cluster output:-
+	kubectl get node
+	NAME                STATUS   ROLES    AGE   VERSION
+	master1.cloud.com   Ready    master   15h   v1.16.3
+
+  kube-system pod status:-
+	NAME                                        READY   STATUS             RESTARTS   AGE
+	coredns-5644d7b6d9-2l2xz                    1/1     Running            1          15h
+	coredns-5644d7b6d9-9m7zp                    1/1     Running            1          15h
+	etcd-master1.cloud.com                      1/1     Running            1          15h
+	kube-apiserver-master1.cloud.com            1/1     Running            1          15h
+	kube-controller-manager-master1.cloud.com   1/1     Running            2          15h
+	kube-flannel-ds-8grpw                       1/1     Running            1          15h
+	kube-proxy-l76pn                            1/1     Running            1          15h
+	kube-scheduler-master1.cloud.com            1/1     Running            2          15h
+	
+    Created a new namespace and set that namespace as an default.
+	- kubectl create namespace raj
+	- kubectl config set-context $(kubectl config current-context) --namespace=raj
+	
+	
+2) Second sub task :-  Connect kubernetes cluster with Jenkins
+
+	- To connect k8's cluster with jenkins just added .kube folder in /var/lib/jenkins location.
+	- changed it's owner and group permission to jenkins.
+	
+    Output :-
+	jenkins@master1:~$ kubectl get namespace
+	NAME              STATUS   AGE
+	default           Active   15h
+	kube-node-lease   Active   15h
+	kube-public       Active   15h
+	kube-system       Active   15h
+	monitoring        Active   12h
+	raj               Active   12h
+
+3) Third sub task :- CICD setup for developers.
+
+   -Jenkins :- 
+   	      Created a job and added GitHub project url and git repository url.
+   	      Wrote CICD steps into the Execute shell. (Attached)
+   
+   -GitHub :-
+   	      Created a new account.
+   	      Created public and private repository.
+   	      Added webhook for push action.
+   	      		:- http://4ba1-157-33-196-179.ngrok.io/github-webhook/?job=Task_CICD
+   	      In repository have an simple index.html file. (Attached)
+   	
+   -Ngrock :-
+   	      To connect gitHub webhook to local jenkins (0.0.0.0:8080) I used ngrock.
+   	      http://4ba1-157-33-196-179.ngrok.io
+   	      
+   -Private registry:- 
+          Created one docker private registry with following command.
+          docker run -d -p 4010:5000 --restart=always --name registry-test -v /opt/registry/certs:/etc/certs -e REGISTRY_HTTP_TLS_CERTIFICATE=/etc/certs/ca.crt -e REGISTRY_HTTP_TLS_KEY=/etc/certs/ca.key -v /opt/registry/data:/var/lib/registry -v /opt/registry/auth/:/auth -e "REGISTRY_AUTH=htpasswd" -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd -e REGISTRY_HTTP_HOST=https://0.0.0.0:4010 registry:2
+                   
+          Added secure registry entery in /etc/docker/daemon.json file.(Attached)
+          To reflect docker registry changes witout any down time we have to just reload the docker daemon. Not required to restart it.
+              
+   -K8's deployment's:-
+              I served one nginx static page using k8's. Attaced it's deployment file, service file, Dockerfile.
+   		
+ 
+4)Fourth sub task :- The application should update without downtime		        
+                    
+                With the help of kubectl apply we manage downtime of application.
+                kubectl apply -f nginx.yaml
+
+       	      		
