@@ -1,0 +1,83 @@
+Started by an SCM change
+Running as SYSTEM
+Building in workspace /var/lib/jenkins/workspace/NGINX_CICD
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/NGINX_CICD/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/rajshinde7/cicd_testing.git # timeout=10
+Fetching upstream changes from https://github.com/rajshinde7/cicd_testing.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.25.1'
+ > git fetch --tags --force --progress -- https://github.com/rajshinde7/cicd_testing.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 8f60b4b32bdcfbbaf89930ce37488af072fabc1d (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 8f60b4b32bdcfbbaf89930ce37488af072fabc1d # timeout=10
+Commit message: "Update index.html"
+ > git rev-list --no-walk e5bfd5942884d932871bc60ce187b1f40fe6e718 # timeout=10
+[NGINX_CICD] $ /bin/sh -xe /tmp/jenkins6081212561717195827.sh
++ pwd
++ a=/var/lib/jenkins/workspace/NGINX_CICD
++ date +%d-%m-20%y-%H-%M
++ dat=20-10-2021-08-21
++ echo 20-10-2021-08-21
+20-10-2021-08-21
++ cd /opt/demo/project/build/
++ echo Now in /opt/demo/project/build/--> 0
+Now in /opt/demo/project/build/--> 0
++ mkdir -p /opt/demo/project/backup/20-10-2021-08-21
++ echo Created backup directory--> 0
+Created backup directory--> 0
++ mv index.html /opt/demo/project/backup/20-10-2021-08-21
++ cp -r /var/lib/jenkins/workspace/NGINX_CICD/index.html .
++ echo Copied index.html file to Build location-->0
+Copied index.html file to Build location-->0
++ docker build -t 0.0.0.0:4010/nginx:NGINX_CICD-20-10-2021-08-21 .
+Sending build context to Docker daemon  3.072kB
+
+Step 1/3 : FROM nginx
+ ---> 87a94228f133
+Step 2/3 : EXPOSE 80
+ ---> Using cache
+ ---> ad2ac912fe77
+Step 3/3 : COPY index.html /usr/share/nginx/html
+ ---> 9f2c3e1ad94a
+Successfully built 9f2c3e1ad94a
+Successfully tagged 0.0.0.0:4010/nginx:NGINX_CICD-20-10-2021-08-21
++ echo Docker build -->0
+Docker build -->0
++ docker push 0.0.0.0:4010/nginx:NGINX_CICD-20-10-2021-08-21
+The push refers to repository [0.0.0.0:4010/nginx]
+0d67fade9e4d: Preparing
+9959a332cf6e: Preparing
+f7e00b807643: Preparing
+f8e880dfc4ef: Preparing
+788e89a4d186: Preparing
+43f4e41372e4: Preparing
+e81bff2725db: Preparing
+43f4e41372e4: Waiting
+e81bff2725db: Waiting
+788e89a4d186: Layer already exists
+f8e880dfc4ef: Layer already exists
+f7e00b807643: Layer already exists
+9959a332cf6e: Layer already exists
+e81bff2725db: Layer already exists
+43f4e41372e4: Layer already exists
+0d67fade9e4d: Pushed
+NGINX_CICD-20-10-2021-08-21: digest: sha256:0bc4f6bd7fd1a68924cc0c853a344262fb9e9ca7f64b39424a3dffe5424db27c size: 1777
++ echo Docker push-->0
+Docker push-->0
++ cd /opt/demo/project/depeloment/
++ awk -F : {print$4}
++ grep image
++ cat nginx.yaml
++ a=NGINX_CICD-19-10-2021-22-12
++ echo NGINX_CICD-19-10-2021-22-12
+NGINX_CICD-19-10-2021-22-12
++ sed -i -e s@NGINX_CICD-19-10-2021-22-12@NGINX_CICD-20-10-2021-08-21@g nginx.yaml
++ echo Changes image name in the deployment files -->0
+Changes image name in the deployment files -->0
++ kubectl apply -f nginx.yaml
+deployment.apps/nginx-app configured
+Finished: SUCCESS
